@@ -10,7 +10,7 @@ var botmanWidget = {
     introMessage: "Willkommen beim Chatbot des Roten Kreuzes Niederösterreich, wie kann ich Ihnen helfen?",
     aboutText: "Powered By MaStEr05111",
     frameEndpoint: '/site/chatframe',
-    chatServer: '/site/hearbot'    
+    chatServer: '/chatbot/hearbot'    
 };
 </script>
 <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
