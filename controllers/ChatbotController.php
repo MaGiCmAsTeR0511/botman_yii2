@@ -27,8 +27,12 @@ class ChatbotController extends Controller
         $botman = BotManFactory::create($config);
         
         // Give the bot something to listen for.
-        $botman->hears('hallo', function (BotMan $bot) {
+        $botman->hears('hallo', function ($bot) {
             $bot->reply('Hallo');
+        });
+
+        $botman->fallback(function($bot) {
+            $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
         });
         
         // Start listening
