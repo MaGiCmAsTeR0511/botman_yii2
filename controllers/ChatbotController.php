@@ -7,6 +7,7 @@ use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\Drivers\Web\WebDriver;
+use PharIo\Version\OrVersionConstraintGroup;
 use yii\rest\Controller;
 
 class ChatbotController extends Controller
@@ -34,7 +35,11 @@ class ChatbotController extends Controller
         $botman->fallback(function($bot) {
             $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
         });
-        
+
+        $botman->hears('Ticket Schließen ([0-9]+)',function($bot,$number){
+                    $bot->reply('das Ticket#'.$number.' wurde geschlossen');
+        });
+         
         // Start listening
         $botman->listen();
         die();
