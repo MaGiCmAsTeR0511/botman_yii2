@@ -19,6 +19,14 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        /*'cache' => [
+            'class' => 'yii\caching\MemCache',
+            'useMemcached' => true,
+            'servers' => [[
+                'host' =>'memcached',
+                'port' => 11211,
+            ],]
+        ],*/
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,

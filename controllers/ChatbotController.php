@@ -2,12 +2,19 @@
 
 namespace app\controllers;
 
+use app\models\Problem;
+use BotMan\BotMan\Cache\CodeIgniterCache;
+use BotMan\BotMan\Cache\LaravelCache;
+use BotMan\BotMan\Cache\Psr6Cache;
+use idk\yii2\botman\Cache;
 use Yii;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\Drivers\Web\WebDriver;
-use PharIo\Version\OrVersionConstraintGroup;
+use yii\caching\ApcCache;
+use yii\caching\FileCache;
+use yii\caching\MemCache;
 use yii\rest\Controller;
 
 class ChatbotController extends Controller
@@ -23,18 +30,22 @@ class ChatbotController extends Controller
         
         // Load the driver(s) you want to use
         DriverManager::loadDriver(WebDriver::class);
-        
         // Create an instance
-        $botman = BotManFactory::create($config);
+        $botman = BotManFactory::create($config, new Cache());
         
         // Give the bot something to listen for.
-        $botman->hears('hallo', function ($bot) {
-            $bot->reply('Hallo');
+        $botman->hears('.*Problem.*', function ($bot) {
+            $bot->startConversation(new Problem());
         });
 
-        $botman->fallback(function($bot) {
-            $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
+        $botman->hears('.*Hallo.*', function ($bot) {
+            $bot->reply('Hallo du :D');
         });
+
+
+        /*$botman->fallback(function($bot) {
+            $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
+        });*/
 
         $botman->hears('Ticket Schließen ([0-9]+)',function($bot,$number){
                     $bot->reply('das Ticket#'.$number.' wurde geschlossen');
@@ -42,6 +53,6 @@ class ChatbotController extends Controller
          
         // Start listening
         $botman->listen();
-        die();
+
     }
 }

@@ -2,13 +2,13 @@
 
 /* @var $this yii\web\View */
 
-$this->title = 'My Yii Application';
+$this->title = 'Test Ticket-Chatbot';
 ?>
 <script>
 var botmanWidget = {
-    title: "Mein Testbot",
-    introMessage: "Willkommen beim Chatbot des Roten Kreuzes Niederösterreich, wie kann ich Ihnen helfen?",
-    aboutText: "Powered By MaStEr05111",
+    title: "Test Ticket-Chatbot",
+    introMessage: "Willkommen beim Ticket-Chatbot!",
+    aboutText: "Powered By Kurt Hohenauer",
     frameEndpoint: '/site/chatframe',
     chatServer: '/chatbot/hearbot'    
 };
