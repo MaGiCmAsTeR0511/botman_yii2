@@ -42,6 +42,10 @@ class ChatbotController extends Controller
             $bot->reply('Hallo du :D');
         });
 
+        $botman->fallback(function($bot) {
+            $bot->reply('Entschuldigung ich habe dich nicht verstanden. Kannst du es nochmal wiederholen??');
+        });
+
 
         /*$botman->fallback(function($bot) {
             $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');

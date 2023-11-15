@@ -11,6 +11,8 @@ class Problem extends Conversation
 
     public $text;
 
+
+
     private $it_keywords = ['client'=> ['meinrechner', 'meincomputer', 'thinclient', 'computer'], 'web' => ['weboberfläche', 'iminternet','intranet','internet','web']];
     private $finance_keywords = ['salary' => ['gehalt','steuer','nachzahlung','abrechnung'], 'navision' =>['abrechnung', 'finanzproblem', 'navisionprogramm']];
     private $facility_keywords =['electricity' => ['strom', 'lampe', 'steckdose', 'licht'], 'facility' => ['parkplatz', 'wand', 'boden', 'dreck', 'schmutz']];
@@ -18,14 +20,29 @@ class Problem extends Conversation
 
     public function welcomeMessage(){
         $this->say('Hallo, ich habe gehört due hast ein Problem? Ich möchte dir dabei helfen dass es an die richtige Stelle weitergegeben wird');
-        $this->ask('Könntest du mir bitte das Problem beschreiben?[Ja/Nein]', function(Answer $answer){
+        $this->ask('Könntest du mir bitte das Problem beschreiben?[Ja/Nein]', [
+            [
+                'pattern' => 'yes|yep|Ja|ja',
+                'callback' => function () {
+                    $this->describeProblem();
+                }
+            ],
+            [
+                'pattern' => 'nah|no|nope|Nein|nein',
+                'callback' => function () {
+                    $this->say('Dann habe ich dass wohl falsch verstanden');
+                    $this->stopsConversation('Wie kann ich dir noch behilflich sein ');
+                }
+            ]
+        ]);
+       /*$this->ask('Könntest du mir bitte das Problem beschreiben?[Ja/Nein]', function(Answer $answer){
             if(in_array(mb_strtolower($answer->getText()),['nein','nope', 'ne'])){
                 $this->say('Dann habe ich dass wohl falsch verstanden');
                 return true;
             }else{
                 $this->describeProblem();
             }
-        });
+        });*/
 
 
     }
