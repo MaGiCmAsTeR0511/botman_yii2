@@ -11,8 +11,7 @@ class Problem extends Conversation
 
     public $text;
 
-
-
+    public $model;
     private $it_keywords = ['client'=> ['meinrechner', 'meincomputer', 'thinclient', 'computer'], 'web' => ['weboberfläche', 'iminternet','intranet','internet','web']];
     private $finance_keywords = ['salary' => ['gehalt','steuer','nachzahlung','abrechnung'], 'navision' =>['abrechnung', 'finanzproblem', 'navisionprogramm']];
     private $facility_keywords =['electricity' => ['strom', 'lampe', 'steckdose', 'licht'], 'facility' => ['parkplatz', 'wand', 'boden', 'dreck', 'schmutz']];
@@ -50,7 +49,11 @@ class Problem extends Conversation
 
     public function describeProblem(){
         $this->ask("Dann beschreib es mir bitte, so genau wie möglich ", function(Answer $answer){
-            $this->say("Laut meiner Überlegung ist dein Problem am besten bei ".$this->searchkey($answer).'aufgehoben');
+            $model = new Problem_table();
+            $model->text = $answer;
+            echo '<pre>'.print_r($this->searchkey($model->text),TRUE).'</pre>';
+            $model->calculated_department = $this->searchkey($model->text);
+            $this->say("Laut meiner Überlegung ist dein Problem am besten bei ".$model->calculated_department.'aufgehoben');
 
         });
 
@@ -93,12 +96,12 @@ class Problem extends Conversation
         $ranking = array_filter($ranking, function ($value) {
             return $value !== 0;
         });
+
         arsort($ranking);
-        echo '<pre>'.print_r($ranking,TRUE).'</pre>';
 
 
 
-    return reset($ranking);
+    return $ranking;
     }
 
     public function run(){
