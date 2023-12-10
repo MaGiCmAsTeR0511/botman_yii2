@@ -48,8 +48,6 @@ class SiteController extends Controller
     }
 
     public function actionHearbot(){
-        var_dump(Yii::$app->request->post());
-        die('asdasdasd');
     }
 
     /**
