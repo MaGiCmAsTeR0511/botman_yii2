@@ -51,17 +51,26 @@ class Problem extends Conversation
     public function describeProblem(){
         $this->ask("Dann beschreib es mir bitte, so genau wie möglich ", function(Answer $answer){
             $model = new Problem_table();
+            $default = false;
             $model->id = 0;
             $model->text = $answer->getText();
             $model->calculated_team = $this->searchkey($model->text);
+            if(empty($model->calculated_team)){
+                $default = true;
+                $model->calculated_team = 'client';
+            }
             $model->calculated_department = $this->getDepartment($model->calculated_team);
-            if(!$model->save()){
-                $this->say("es tut mir leid ich konnte dein Problem nicht richtig zuordnen..... 
-                Dass Ticket wird aufgenommen und weitergeleitet, Es kann etwas dauern da es nochmals angesehen wrden muss um es in richtig zuzuordnen");
 
+            if(!$model->save()){
+                $this->say("Es tut mir leid beim Speichern der Antwort ist etwas schiefgegangen....");
             }else {
                 $this->temp_id = $model->id;
-                $this->say("Laut meiner Überlegung ist dein Problem am besten bei der Abteilung " . $model->calculated_department . ' aufgehoben');
+                if($default){
+                    $this->say("Ich konnte dein Problem nicht genau zuordnen deswegen hab ich es der Abteilung IT ". $model->calculated_department . "zugeordnet");
+                }else{
+                    $this->say("Laut meiner Überlegung ist dein Problem am besten bei der Abteilung " . $model->calculated_department . ' aufgehoben');
+                }
+
                 $this->ask("Habe ich damit recht oder liege ich falsch [Ja -> ich liege richtig/Nein -> ich liege falsch]", [
                         [
                             'pattern' => 'yes|yep|Ja|ja',
