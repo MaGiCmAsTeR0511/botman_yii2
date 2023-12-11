@@ -12,8 +12,11 @@ class Problem extends Conversation
     public $text;
 
     public $temp_id;
+
+    public $user_department;
+    public $user_team;
     private $departments = ['IT' => ['client', 'web'], 'FINANCE' => ['salary'], 'FACILITY' => ['electricity', 'facility']];
-    private $it_keywords = ['client'=> ['meinrechner', 'meincomputer', 'thinclient', 'computer','netzerk','server', 'switch','lankabel',], 'web' => ['weboberfläche', 'iminternet','intranet','internet','web', 'schnittstelle','homepage','typo3','wordpress','joomla']];
+    private $it_keywords = ['client'=> ['meinrechner', 'meincomputer', 'thinclient', 'computer','netzwerk','server', 'switch','lankabel',], 'web' => ['weboberfläche', 'iminternet','intranet','internet','web', 'schnittstelle','homepage','typo3','wordpress','joomla']];
     private $finance_keywords = ['salary' => ['gehalt','steuer','nachzahlung','abrechnung','abrechnungprogramm', 'finanzproblem', 'navisionprogramm', 'navision']];
     private $facility_keywords =['electricity' => ['strom', 'lampe', 'steckdose', 'licht', 'beleuchtung', 'Elektroauto'], 'facility' => ['parkplatz', 'wand', 'boden', 'dreck', 'schmutz', 'reinigung', 'fuhrpark', 'sicherheitsfachkraft']];
 
@@ -66,7 +69,7 @@ class Problem extends Conversation
             }else {
                 $this->temp_id = $model->id;
                 if($default){
-                    $this->say("Ich konnte dein Problem nicht genau zuordnen deswegen hab ich es der Abteilung IT ". $model->calculated_department . "zugeordnet");
+                    $this->say("Ich konnte dein Problem nicht genau zuordnen deswegen hab ich es der Abteilung ". $model->calculated_department . "zugeordnet");
                 }else{
                     $this->say("Laut meiner Überlegung ist dein Problem am besten bei der Abteilung " . $model->calculated_department . ' aufgehoben');
                 }
@@ -101,14 +104,30 @@ class Problem extends Conversation
     public function notporperlydescribed()
     {
         $this->say("Dann würde ich die bitten mich bei der Korrektur zur unterstützen?");
-        $this->ask("Welcher Abteilung und Team würdest das Ticket zuordnen? Um das ganze so einfach wie möglich zu 
-                                gestalten bitte das ganze wie folgt eingeben zuerst die Abteilung mit einem Beistrich vom Team getrennt", function (Answer $answer) {
-            $split = explode(",", $answer->getText());
-            $model = Problem_table::findOne(['id' => $this->temp_id]);
-            $model->user_department = $split[0];
-            $model->user_team = $split[1];
-            $model->save();
-            $this->say('Vielen Dank für den Test des Chatbots und das korrigieren :D');
+        $this->ask("Welcher Abteilung  würdest du das Ticket zuordnen? Folgende Abteilungen sind zulässig: IT,FINANCE,FACILITY", function (Answer $answer) {
+
+            if(in_array($answer->getText(),["IT","FINANCE","FACILITY"])){
+                $this->user_department = $answer->getText();
+                $teams = implode(",",$this->departments[$this->user_department]);
+                $this->ask("Danke! Welchem Team würdest du es am ehesten zuordnen? Folgende Teams sind zulässig: $teams", function( Answer $answer2){
+                    $teams = $this->departments[$this->user_department];
+                    if(in_array($answer2->getText(),$teams)){
+                        $model = Problem_table::findOne(['id' => $this->temp_id]);
+                        $model->user_department = $this->user_department;
+                        $model->user_team = $answer2->getText();
+                        $model->save();
+                        $this->say('Vielen Dank für den Test des Chatbots und das korrigieren :D');
+                    }else{
+                       $this->say("Dieses Team gibt es leider nicht versuchen wir es nochmal.....");
+                       $this->notporperlydescribed();
+                    }
+                });
+            }else{
+                $this->say("Diese Abteilung gibt es leider nicht !!!!");
+                $this->notporperlydescribed();
+            }
+
+
         });
     }
 
